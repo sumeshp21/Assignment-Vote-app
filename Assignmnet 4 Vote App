@@ -1,0 +1,84 @@
+Related vote app I ahve deployed the pods vote /worker/result/redis/db pods 
+[root@ip-172-31-15-141 k8s-specifications]# kubectl get svc
+NAME         TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE
+db           ClusterIP   10.105.62.21   <none>        5432/TCP         5d9h
+kubernetes   ClusterIP   10.96.0.1      <none>        443/TCP          5d9h
+redis        ClusterIP   10.111.23.74   <none>        6379/TCP         5d9h
+result       NodePort    10.99.44.106   <none>        5001:31004/TCP   5d9h
+vote         NodePort    10.96.83.66    <none>        5000:31003/TCP   5d9h
+[root@ip-172-31-15-141 k8s-specifications]#
+
+Deleted the worker pod - Observation
+
+New worker pod is got created No changes observed in front end and back end (Result pod already showing one restart before deleting) . Logs are getting vanished .
+
+NAME                      READY   STATUS    RESTARTS   AGE
+db-b54cd94f4-jtd6h        1/1     Running   0          5d2h
+redis-868d64d78-rhht6     1/1     Running   0          5d9h
+result-5d57b59f4b-8jpqk   1/1     Running   1          5d9h
+vote-94849dc97-bnpvc      1/1     Running   0          105m
+worker-dd46d7584-xcvfv    1/1     Running   1          5d2h
+[root@ip-172-31-15-141 k8s-specifications]# kubectl delete worker-dd46d7584-xcvfv
+error: the server doesn't have a resource type "worker-dd46d7584-xcvfv"
+[root@ip-172-31-15-141 k8s-specifications]# kubectl delete po worker-dd46d7584-xcvfv
+pod "worker-dd46d7584-xcvfv" deleted
+[root@ip-172-31-15-141 k8s-specifications]# kubectl get pods
+NAME                      READY   STATUS    RESTARTS   AGE
+db-b54cd94f4-jtd6h        1/1     Running   0          5d2h
+redis-868d64d78-rhht6     1/1     Running   0          5d9h
+result-5d57b59f4b-8jpqk   1/1     Running   1          5d9h
+vote-94849dc97-bnpvc      1/1     Running   0          106m
+worker-dd46d7584-dk677    1/1     Running   0          18s
+[root@ip-172-31-15-141 k8s-specifications]#
+
+
+Deleted the Vote pod - Observation
+
+New vote pod got created , No changes observed in backend and front end 
+
+[root@ip-172-31-15-141 k8s-specifications]# kubectl get pods
+NAME                      READY   STATUS    RESTARTS   AGE
+db-b54cd94f4-jtd6h        1/1     Running   0          5d2h
+redis-868d64d78-rhht6     1/1     Running   0          5d9h
+result-5d57b59f4b-8jpqk   1/1     Running   1          5d9h
+vote-94849dc97-bnpvc      1/1     Running   0          106m
+worker-dd46d7584-dk677    1/1     Running   0          18s
+[root@ip-172-31-15-141 k8s-specifications]# kubectl delete po vote-94849dc97-bnpvc
+pod "vote-94849dc97-bnpvc" deleted
+[root@ip-172-31-15-141 k8s-specifications]# kubectl get pods
+NAME                      READY   STATUS    RESTARTS   AGE
+db-b54cd94f4-jtd6h        1/1     Running   0          5d2h
+redis-868d64d78-rhht6     1/1     Running   0          5d9h
+result-5d57b59f4b-8jpqk   1/1     Running   1          5d9h
+vote-94849dc97-l8sw9      1/1     Running   0          37s
+worker-dd46d7584-dk677    1/1     Running   0          3m9s
+[root@ip-172-31-15-141 k8s-specifications]#
+
+Deleting Deployment pod -Observation
+New deployemnt pod got created . Result and worker pod got restarted . In Front end the exixsting data (votes) are getting vanished .
+
+
+[root@ip-172-31-15-141 k8s-specifications]# kubectl delete po vote-94849dc97-bnpvc
+pod "vote-94849dc97-bnpvc" deleted
+[root@ip-172-31-15-141 k8s-specifications]# kubectl get pods
+NAME                      READY   STATUS    RESTARTS   AGE
+db-b54cd94f4-jtd6h        1/1     Running   0          5d2h
+redis-868d64d78-rhht6     1/1     Running   0          5d9h
+result-5d57b59f4b-8jpqk   1/1     Running   1          5d9h
+vote-94849dc97-l8sw9      1/1     Running   0          37s
+worker-dd46d7584-dk677    1/1     Running   0          3m9s
+[root@ip-172-31-15-141 k8s-specifications]# kubectl delete po db-b54cd94f4-jtd6h
+pod "db-b54cd94f4-jtd6h" deleted
+[root@ip-172-31-15-141 k8s-specifications]# kubectl get pods
+NAME                      READY   STATUS    RESTARTS   AGE
+db-b54cd94f4-bz92g        1/1     Running   0          36s
+redis-868d64d78-rhht6     1/1     Running   0          5d9h
+result-5d57b59f4b-8jpqk   1/1     Running   2          5d9h
+vote-94849dc97-l8sw9      1/1     Running   0          2m49s
+worker-dd46d7584-dk677    1/1     Running   1          5m21s
+[root@ip-172-31-15-141 k8s-specifications]#
+
+
+
+
+
